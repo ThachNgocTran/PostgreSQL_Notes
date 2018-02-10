@@ -349,7 +349,7 @@ SELECT version();
 
 # References
 
-[1] https://blog.timescale.com/scaling-partitioning-data-postgresql-10-explained-cd48a712a9a1?gi=ea309940dfc4
-[2] http://www.postgresqltutorial.com/creating-first-trigger-postgresql/ 
-[3] http://www.postgresqlforbeginners.com/2010/12/schema.html
-[4] https://stackoverflow.com/questions/28951786/postgresql-multiple-database-vs-multiple-schemas
+[1] https://blog.timescale.com/scaling-partitioning-data-postgresql-10-explained-cd48a712a9a1?gi=ea309940dfc4  
+[2] http://www.postgresqltutorial.com/creating-first-trigger-postgresql/  
+[3] http://www.postgresqlforbeginners.com/2010/12/schema.html  
+[4] https://stackoverflow.com/questions/28951786/postgresql-multiple-database-vs-multiple-schemas  
