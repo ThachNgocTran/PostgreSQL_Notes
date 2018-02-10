@@ -311,6 +311,78 @@ pip install psycopg2
 
 ```python
 import psycopg2
+from datetime import datetime
+
+con = None
+
+try:    
+    con = psycopg2.connect(database="mydb", 
+                           user="test", 
+                           host="localhost", 
+                           password="test", 
+                           port=5432)
+    
+    cur = con.cursor()
+    
+    # Get the latest updated time in 'master_table' (if no rows there already (due to first run), use 0).
+    cur.execute(""" 
+                    SELECT MAX(mt.updated) 
+                    FROM master_table mt
+                """)
+    row = cur.fetchone()
+    max_updated_time = 0
+    if (row[0] != None):
+        print("master_table is not empty! The latest updated time must be available.")
+        max_updated_time = row[0]
+        print("Latest updated time in Master Table = {0}".format(datetime.fromtimestamp(max_updated_time/1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')))
+    
+    # Update 'master_table' with the modified OLD rows in table 'transactions' since the last sync.
+    cur.execute("""
+                    UPDATE master_table
+                    SET user_id = st.user_id,
+                        certified_by_user = st.certified_by_user,
+                        amount = st.amount,
+                        status = st.status,
+                        updated = st.updated
+                    FROM tinytransactions st
+                    WHERE   st.updated > %s AND 
+                            st.id IN (SELECT mt.id FROM master_table mt) AND 
+                            st.id = master_table.id
+                """, (max_updated_time, ))
+    
+    rows_affected_by_update = cur.rowcount
+    print("Rows affected by UPDATE: {0}".format(rows_affected_by_update))
+    
+    con.commit()
+    
+    # Insert into 'master_table' with the NEW rows in table 'transactions' since the last sync.
+    cur.execute("""
+                    INSERT INTO master_table(id, user_id, certified_by_user, amount, status, created, updated)
+                    SELECT st.id, st.user_id, st.certified_by_user, st.amount, st.status, st.created, st.updated
+                    FROM tinytransactions st
+                    WHERE   st.updated > %s AND 
+                            st.id NOT IN (SELECT mt.id FROM master_table mt)
+                """, (max_updated_time, ))
+    
+    rows_affected_by_insert = cur.rowcount
+    print("Rows affected by INSERT: {0}".format(rows_affected_by_insert))
+    
+    con.commit()
+    cur.close()
+    
+    if (rows_affected_by_update == 0 and rows_affected_by_insert == 0):
+        print("Already in sync!")
+    
+    # Done!
+    print("Done!")
+    
+except psycopg2.DatabaseError as e:
+    if con:
+        con.rollback()
+    print('Error {0}'.format(e))
+finally:   
+    if con:
+        con.close()
 ```
 
 <a name="tip13"></a>
