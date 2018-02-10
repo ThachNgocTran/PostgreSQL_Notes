@@ -206,13 +206,13 @@ The exact point at which partitioning should be considered instead of a large ta
 
 **Partitioning via table inheritance: (old way)**
 
-1). Create the “parent” table, from which all of the partitions will inherit.
-2). Create several “child” tables (each representing a partition of the data) that each inherit from the parent.
-3). Add constraints to the partition tables to define the row values in each partition.
-4). Create indexes on any parent and child tables individually. (Indexes do not propagate from the parent tables to child tables).
-5). Write a suitable trigger function to the master table so that inserts into the parent table redirect into the appropriate partition table.
-6). Create a trigger that calls the trigger function.
-7). Remember to redefine the trigger function when the set of child tables changes.
+1). Create the “parent” table, from which all of the partitions will inherit.  
+2). Create several “child” tables (each representing a partition of the data) that each inherit from the parent.  
+3). Add constraints to the partition tables to define the row values in each partition.  
+4). Create indexes on any parent and child tables individually. (Indexes do not propagate from the parent tables to child tables).  
+5). Write a suitable trigger function to the master table so that inserts into the parent table redirect into the appropriate partition table.  
+6). Create a trigger that calls the trigger function.  
+7). Remember to redefine the trigger function when the set of child tables changes.  
 
 Note: Child tables are permitted to have extra columns not present in the parent table.
 
@@ -254,13 +254,13 @@ Commands such as TRUNCATE and COPY now **propagate to child tables via execution
 
 Disadvantages: (FOR NOW, MAY CHANGE IN VERSION 11)
 
-1). For example, child tables for the data need to exist before the data is inserted. 
-2). Cannot create indexes on all partitions automatically. Indexes still need to be manually created on each partition.
-3). Updates that would move a row from one partition to another will fail.
-4). Row triggers must be defined on individual partitions.
-5). Multi-dimensional partitioning is cumbersome (...)
-6). Cannot create primary keys on partitions: meaning that foreign keys referencing partitioned tables are not supported, nor are foreign key references from a partitioned table to another table.
-7). No support for enforcing uniqueness (or an exclusion constraint) across an entire partitioned table. Unique or exclusion constraints can only be created on individual partitions.
+1). For example, child tables for the data need to exist before the data is inserted.  
+2). Cannot create indexes on all partitions automatically. Indexes still need to be manually created on each partition.  
+3). Updates that would move a row from one partition to another will fail.  
+4). Row triggers must be defined on individual partitions.  
+5). Multi-dimensional partitioning is cumbersome (...)  
+6). Cannot create primary keys on partitions: meaning that foreign keys referencing partitioned tables are not supported, nor are foreign key references from a partitioned table to another table.  
+7). No support for enforcing uniqueness (or an exclusion constraint) across an entire partitioned table. Unique or exclusion constraints can only be created on individual partitions.  
 
 See [1] for original posting.
 
